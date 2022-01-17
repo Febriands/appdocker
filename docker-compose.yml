@@ -10,7 +10,7 @@ services:
       - static:/website/staticfiles
     working_dir: /website
     ports:
-      - "52.187.66.134:8014:8014"
+      - "8014:8014"
     env_file:
       - .env
     depends_on:
