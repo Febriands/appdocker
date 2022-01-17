@@ -10,7 +10,7 @@ services:
       - static:/website/staticfiles
     working_dir: /website
     ports:
-      - "8014:8014"
+      - "52.187.66.134:8014:8014"
     env_file:
       - .env
     depends_on:
@@ -23,7 +23,7 @@ services:
     volumes:
       - static:/static
     ports:
-      - "8013:80"
+      - "52.187.66.134:8013:80"
     depends_on:
       - django_gunicorn
   
