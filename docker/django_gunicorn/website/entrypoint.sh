@@ -9,4 +9,4 @@ DJANGO_SUPERUSER_PASSWORD=admin \
 DJANGO_SUPERUSER_EMAIL=admin@admin.com \
 python manage.py createsuperuser --noinput
 
-gunicorn website.wsgi:application --bind 0.0.0.0:8000
+gunicorn website.wsgi:application --bind 52.187.66.134:8014
