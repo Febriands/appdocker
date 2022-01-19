@@ -1,38 +1,12 @@
 version: '3'
 
 services:
-  django_gunicorn:
-    container_name: django_gunicorn_app1
+  mariadb:
+    container_name: mariadb_app1
     restart: always
-    build: ./docker/django_gunicorn
+    build: ./docker/mariadb
     volumes:
-      - website:/website
-      - static:/website/staticfiles
-    working_dir: /website
-    ports:
-      - "8014:8014"
-    env_file:
-      - .env
-    depends_on:
-      - mysql
-
-  nginx:
-    container_name: nginx_app1
-    restart: always
-    build: ./docker/nginx
-    volumes:
-      - static:/static
-    ports:
-      - "8013:80"
-    depends_on:
-      - django_gunicorn
-  
-  mysql:
-    container_name: mysql_app1
-    restart: always
-    build: ./docker/mysql
-    volumes:
-      - ./mysql:/var/lib/mysql
+      - mariadb:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
@@ -42,8 +16,40 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       TZ: 'Asia/Jakarta'
+    healthcheck:
+      test: "mysql $$MYSQL_DATABASE -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1;'"
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  django_gunicorn:
+    container_name: django_gunicorn_app1
+    restart: always
+    build: ./docker/django_gunicorn
+    volumes:
+      - website:/website
+      - static:/website/staticfiles
+    working_dir: /website
+    ports:
+      - "8013:8000"
+    env_file:
+      - .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  nginx:
+    container_name: nginx_app1
+    restart: always
+    build: ./docker/nginx
+    volumes:
+      - static:/static
+    ports:
+      - "8014:80"
+    depends_on:
+      - django_gunicorn
 
 volumes:
   static:
   website:
-  mysql:
+  mariadb:
